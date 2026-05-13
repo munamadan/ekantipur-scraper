@@ -1,0 +1,8 @@
+make me a simple playwright python scraper for ekantipur that writes output.json in the exact format from the test
+use the entertainment page and pull top 5 news with title image_url category and author, keep author none if missing
+for cartoon of the day check homepage and grab title image and author if available
+please keep code very simple and easy to read, no classes and no fancy logic
+can you simplify this function a bit without changing output
+remove extra comments and keep only the really important ones
+add basic timeout/error handling so script still writes valid json if something is missing
+quick refactor pass so it looks clean and human written, keep variable names straightforward
