@@ -7,14 +7,14 @@ from playwright.sync_api import sync_playwright
 BASE_URL = "https://ekantipur.com"
 
 
-def clean(value):
+def clean_text(value):
     if not value:
         return None
     text = " ".join(value.split())
     return text or None
 
 
-def abs_url(url):
+def full_url(url):
     if not url:
         return None
     return urljoin(BASE_URL, url)
@@ -33,7 +33,7 @@ def extract_entertainment(page):
         if not title_el:
             continue
 
-        title = clean(title_el.text_content())
+        title = clean_text(title_el.text_content())
         if not title:
             continue
 
@@ -43,14 +43,14 @@ def extract_entertainment(page):
             image_url = img.get_attribute("src") or img.get_attribute("data-src")
 
         author_el = card.query_selector(".author-name a")
-        author = clean(author_el.text_content()) if author_el else None
+        author = clean_text(author_el.text_content()) if author_el else None
         category_el = card.query_selector(".category-name a")
-        category = clean(category_el.text_content()) if category_el else None
+        category = clean_text(category_el.text_content()) if category_el else None
 
         items.append(
             {
                 "title": title,
-                "image_url": abs_url(image_url),
+                "image_url": full_url(image_url),
                 "category": category or "मनोरञ्जन",
                 "author": author,
             }
@@ -75,12 +75,12 @@ def extract_cartoon_of_day(page):
     if image.count() == 0:
         return {"title": None, "image_url": None, "author": None}
 
-    title = clean(image.get_attribute("alt"))
+    title = clean_text(image.get_attribute("alt"))
     image_url = image.get_attribute("src") or image.get_attribute("data-src")
 
     return {
         "title": title,
-        "image_url": abs_url(image_url),
+        "image_url": full_url(image_url),
         "author": None,
     }
 
