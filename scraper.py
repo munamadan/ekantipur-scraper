@@ -64,7 +64,25 @@ def extract_entertainment(page):
 
 def extract_cartoon_of_day(page):
     """Read the homepage cartoon block and return one cartoon dictionary."""
-    return {"title": None, "image_url": None, "author": None}
+    page.goto(BASE_URL, wait_until="domcontentloaded")
+    page.wait_for_timeout(1500)
+
+    section = page.locator("section:has(h4 a[href*='/cartoon'])").first
+    if section.count() == 0:
+        return {"title": None, "image_url": None, "author": None}
+
+    image = section.locator(".swiper-slide img").first
+    if image.count() == 0:
+        return {"title": None, "image_url": None, "author": None}
+
+    title = clean(image.get_attribute("alt"))
+    image_url = image.get_attribute("src") or image.get_attribute("data-src")
+
+    return {
+        "title": title,
+        "image_url": abs_url(image_url),
+        "author": None,
+    }
 
 
 def main():
