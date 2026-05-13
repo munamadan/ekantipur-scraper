@@ -5,6 +5,15 @@ from playwright.sync_api import sync_playwright
 
 
 BASE_URL = "https://ekantipur.com"
+TIMEOUT_MS = 45_000
+EMPTY_CARTOON = {"title": None, "image_url": None, "author": None}
+
+
+def empty_output():
+    return {
+        "entertainment_news": [],
+        "cartoon_of_the_day": dict(EMPTY_CARTOON),
+    }
 
 
 def clean_text(value):
@@ -22,7 +31,7 @@ def full_url(url):
 
 def extract_entertainment(page):
     """Read the entertainment listing and return article dictionaries."""
-    page.goto(f"{BASE_URL}/entertainment", wait_until="domcontentloaded")
+    page.goto(f"{BASE_URL}/entertainment", wait_until="domcontentloaded", timeout=TIMEOUT_MS)
     page.wait_for_timeout(1500)
 
     cards = page.query_selector_all(".category-main-wrapper .category")
@@ -69,11 +78,11 @@ def extract_cartoon_of_day(page):
 
     section = page.locator("section:has(h4 a[href*='/cartoon'])").first
     if section.count() == 0:
-        return {"title": None, "image_url": None, "author": None}
+        return dict(EMPTY_CARTOON)
 
     image = section.locator(".swiper-slide img").first
     if image.count() == 0:
-        return {"title": None, "image_url": None, "author": None}
+        return dict(EMPTY_CARTOON)
 
     title = clean_text(image.get_attribute("alt"))
     image_url = image.get_attribute("src") or image.get_attribute("data-src")
@@ -86,17 +95,28 @@ def extract_cartoon_of_day(page):
 
 
 def main():
-    data = {
-        "entertainment_news": [],
-        "cartoon_of_the_day": {"title": None, "image_url": None, "author": None},
-    }
+    data = empty_output()
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        data["entertainment_news"] = extract_entertainment(page)
-        data["cartoon_of_the_day"] = extract_cartoon_of_day(page)
-        browser.close()
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            try:
+                page = browser.new_page()
+                page.set_default_timeout(TIMEOUT_MS)
+
+                try:
+                    data["entertainment_news"] = extract_entertainment(page)
+                except Exception:
+                    data["entertainment_news"] = []
+
+                try:
+                    data["cartoon_of_the_day"] = extract_cartoon_of_day(page)
+                except Exception:
+                    data["cartoon_of_the_day"] = dict(EMPTY_CARTOON)
+            finally:
+                browser.close()
+    except Exception:
+        data = empty_output()
 
     with open("output.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
