@@ -7,10 +7,12 @@ BASE_URL = "https://ekantipur.com"
 
 
 def extract_entertainment(page):
+    """Read the entertainment listing and return article dictionaries."""
     return []
 
 
 def extract_cartoon_of_day(page):
+    """Read the homepage cartoon block and return one cartoon dictionary."""
     return {"title": None, "image_url": None, "author": None}
 
 
