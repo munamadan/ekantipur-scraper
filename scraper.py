@@ -44,12 +44,14 @@ def extract_entertainment(page):
 
         author_el = card.query_selector(".author-name a")
         author = clean(author_el.text_content()) if author_el else None
+        category_el = card.query_selector(".category-name a")
+        category = clean(category_el.text_content()) if category_el else None
 
         items.append(
             {
                 "title": title,
                 "image_url": abs_url(image_url),
-                "category": None,
+                "category": category or "मनोरञ्जन",
                 "author": author,
             }
         )
