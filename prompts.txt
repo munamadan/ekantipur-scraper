@@ -1,8 +1,10 @@
-make me a simple playwright python scraper for ekantipur that writes output.json in the exact format from the test
-use the entertainment page and pull top 5 news with title image_url category and author, keep author none if missing
-for cartoon of the day check homepage and grab title image and author if available
-please keep code very simple and easy to read, no classes and no fancy logic
-can you simplify this function a bit without changing output
-remove extra comments and keep only the really important ones
-add basic timeout/error handling so script still writes valid json if something is missing
-quick refactor pass so it looks clean and human written, keep variable names straightforward
+write a simple sync playwright python script for ekantipur that saves output.json in the exact required format with entertainment_news and cartoon_of_the_day
+implement entertainment extraction from https://ekantipur.com/entertainment and return top 5 items with title image_url category author
+use selectors based on .category blocks for entertainment cards and extract title from h2 a, image from img src or data-src, author from .author-name a
+set category to मनोरञ्जन if category text is missing and set author to none if not found
+implement cartoon of the day extraction from homepage section that has h4 link to /cartoon and get title from first slide img alt and image_url from src or data-src
+add tiny helper functions for clean text and absolute url join, keep them very small
+add basic timeout handling so failures do not crash and still write valid json schema
+keep code short and readable, no classes, no advanced patterns, only essential comments
+simplify this function, reduce nesting, keep output same
+remove extra comments and keep only important ones
